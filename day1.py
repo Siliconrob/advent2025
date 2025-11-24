@@ -2,8 +2,9 @@ from collections import Counter
 from typing import Tuple
 from aocd.models import Puzzle
 from icecream import ic
-from parse import parse
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def main() -> None:
     puzzle = Puzzle(year=2025, day=1)
