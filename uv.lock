@@ -26,6 +26,8 @@ dependencies = [
     { name = "advent-of-code-data" },
     { name = "icecream" },
     { name = "meteo-downloader" },
+    { name = "more-itertools" },
+    { name = "networkx" },
     { name = "parse" },
     { name = "python-dotenv" },
 ]
@@ -35,6 +37,8 @@ requires-dist = [
     { name = "advent-of-code-data", specifier = ">=2.1.0" },
     { name = "icecream", specifier = ">=2.1.8" },
     { name = "meteo-downloader", specifier = ">=1.0" },
+    { name = "more-itertools", specifier = ">=10.8.0" },
+    { name = "networkx", specifier = ">=3.5" },
     { name = "parse", specifier = ">=1.20.2" },
     { name = "python-dotenv", specifier = "==1.2.1" },
 ]
@@ -108,6 +112,24 @@ name = "meteo-downloader"
 version = "1.0"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8c/87/757310680e8bfe3beb7f2e1ddc029fc331e09e73050c8ba462d61ed532ef/meteo-downloader-1.0.tar.gz", hash = "sha256:168e1da1df690fbfc65bb3974119f79435d7aef31580c34d7bb66c322502b8db", size = 9154, upload-time = "2013-05-16T23:50:22.136Z" }
+
+[[package]]
+name = "more-itertools"
+version = "10.8.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/5d/38b681d3fce7a266dd9ab73c66959406d565b3e85f21d5e66e1181d93721/more_itertools-10.8.0.tar.gz", hash = "sha256:f638ddf8a1a0d134181275fb5d58b086ead7c6a72429ad725c67503f13ba30bd", size = 137431, upload-time = "2025-09-02T15:23:11.018Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/8e/469e5a4a2f5855992e425f3cb33804cc07bf18d48f2db061aec61ce50270/more_itertools-10.8.0-py3-none-any.whl", hash = "sha256:52d4362373dcf7c52546bc4af9a86ee7c4579df9a8dc268be0a2f949d376cc9b", size = 69667, upload-time = "2025-09-02T15:23:09.635Z" },
+]
+
+[[package]]
+name = "networkx"
+version = "3.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/4f/ccdb8ad3a38e583f214547fd2f7ff1fc160c43a75af88e6aec213404b96a/networkx-3.5.tar.gz", hash = "sha256:d4c6f9cf81f52d69230866796b82afbccdec3db7ae4fbd1b65ea750feed50037", size = 2471065, upload-time = "2025-05-29T11:35:07.804Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/eb/8d/776adee7bbf76365fdd7f2552710282c79a4ead5d2a46408c9043a2b70ba/networkx-3.5-py3-none-any.whl", hash = "sha256:0030d386a9a06dee3565298b4a734b68589749a544acbb6c412dc9e2489ec6ec", size = 2034406, upload-time = "2025-05-29T11:35:04.961Z" },
+]
 
 [[package]]
 name = "parse"
