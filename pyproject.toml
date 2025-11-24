@@ -3,4 +3,8 @@ name = "advent2025"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "advent-of-code-data>=2.1.0",
+    "icecream>=2.1.8",
+    "meteo-downloader>=1.0",
+]
