@@ -54,11 +54,11 @@ def main() -> None:
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
     start_position = 50
-    # ic(part1_solve(start_position, example_data))
+    ic(part1_solve(start_position, example_data))
     # ic(part1_solve(start_position, puzzle.input_data.splitlines()))
 
     ic(part2_solve(start_position, example_data))
-    ic(part2_solve(start_position, puzzle.input_data.splitlines()))
+    # ic(part2_solve(start_position, puzzle.input_data.splitlines()))
 
 if __name__ == '__main__':
     main()
