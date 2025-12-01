@@ -32,33 +32,24 @@ def part2_solve(start_pos: int, instructions: list[str]) -> int:
     for instruction in instructions:
         results = ic(parse_instruction(instruction))
         move = results[0] * results[1]
-        if move + current_pos < 0 and current_pos != 0:
-            q,r = divmod(abs(move) + current_pos, 100)
-            if q == 0:
-                q = 1
-            zero_counts += q
-        if move + current_pos > 100:
-            q,r = divmod(move + current_pos, 100)
-            zero_counts += q
-        next_pos = (current_pos + move) % 100
-        current_pos = abs(next_pos)
-        if current_pos == 0:
-            zero_counts += 1
+        q, r = divmod(move, results[0] * 100)
+        zero_counts += q
+        for i in range(abs(r)):
+            current_pos += results[0]
+            zero_counts += current_pos % 100 == 0
+        current_pos += zero_counts % 100 == 0
     return zero_counts
-
-
-
 
 def main() -> None:
     puzzle = Puzzle(year=2025, day=1)
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
     start_position = 50
-    ic(part1_solve(start_position, example_data))
+    # ic(part1_solve(start_position, example_data))
     # ic(part1_solve(start_position, puzzle.input_data.splitlines()))
 
     ic(part2_solve(start_position, example_data))
-    # ic(part2_solve(start_position, puzzle.input_data.splitlines()))
+    ic(part2_solve(start_position, puzzle.input_data.splitlines()))
 
 if __name__ == '__main__':
     main()
