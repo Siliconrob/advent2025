@@ -40,6 +40,8 @@ def part2_solve(id_ranges: list[str]) -> int:
     for id_range in id_ranges:
         start, end = id_range.split('-')
         for current_number in range(int(start), int(end)+1):
+            if current_number < 10:
+                continue
             number_text = str(current_number)
             counts = Counter(number_text)
             if len(counts) == 1:
@@ -70,7 +72,7 @@ def main() -> None:
     # ic(part1_solve(example_data))
     # ic(part1_solve(puzzle.input_data.split(",")))
     #
-    ic(part2_solve(example_data))
+    # ic(part2_solve(example_data))
     ic(part2_solve(puzzle.input_data.split(",")))
 
 if __name__ == '__main__':
