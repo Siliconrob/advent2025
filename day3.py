@@ -63,16 +63,16 @@ def part2_solve(id_ranges: list[str]) -> int:
     return sum(invalid_ids)
 
 def main() -> None:
-    puzzle = Puzzle(year=2025, day=2)
+    puzzle = Puzzle(year=2025, day=3)
     data = puzzle.input_data
     example = puzzle.examples.pop()
     example_data = example.input_data.split(",")
 
     ic(part1_solve(example_data))
-    ic(part1_solve(puzzle.input_data.split(",")))
-
-    ic(part2_solve(example_data))
-    ic(part2_solve(puzzle.input_data.split(",")))
+    # ic(part1_solve(puzzle.input_data.split(",")))
+    #
+    # ic(part2_solve(example_data))
+    # ic(part2_solve(puzzle.input_data.split(",")))
 
 if __name__ == '__main__':
     main()
