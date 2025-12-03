@@ -16,14 +16,21 @@ def is_palindrome(input: str) -> bool:
     return first_half == second_half
 
 
-def part1_solve(id_ranges: list[str]) -> int:
-    invalid_ids = []
-    for id_range in id_ranges:
-        start, end = id_range.split('-')
-        for current_number in range(int(start), int(end)+1):
-            if is_palindrome(str(current_number)):
-                invalid_ids.append(current_number)
-    return sum(invalid_ids)
+def part1_solve(batteries: list[str]) -> int:
+
+    max_volts = []
+    for battery in batteries:
+        digits = [int(elem) for elem in list(battery)]
+        first_digit = max(digits)
+        first_pos = digits.index(first_digit)
+        if first_pos < len(digits) - 1:
+            second_digit = max(digits[first_pos + 1:])
+        else:
+            second_digit = first_digit
+            first_digit = max(digits[:first_pos])
+        max_volts.append(int(f'{first_digit}{second_digit}'))
+    return sum(max_volts)
+
 
 
 def find_longest_substring(input: str) -> str:
@@ -66,10 +73,10 @@ def main() -> None:
     puzzle = Puzzle(year=2025, day=3)
     data = puzzle.input_data
     example = puzzle.examples.pop()
-    example_data = example.input_data.split(",")
+    example_data = example.input_data.splitlines()
 
     ic(part1_solve(example_data))
-    # ic(part1_solve(puzzle.input_data.split(",")))
+    ic(part1_solve(puzzle.input_data.splitlines()))
     #
     # ic(part2_solve(example_data))
     # ic(part2_solve(puzzle.input_data.split(",")))
