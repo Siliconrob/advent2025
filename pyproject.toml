@@ -9,6 +9,10 @@ dependencies = [
     "meteo-downloader>=1.0",
     "more-itertools>=10.8.0",
     "networkx>=3.5",
+    "numpy>=2.3.5",
     "parse>=1.20.2",
     "python-dotenv==1.2.1",
+    "scipy>=1.16.3",
+    "shapely>=2.1.2",
+    "sympy>=1.14.0",
 ]
