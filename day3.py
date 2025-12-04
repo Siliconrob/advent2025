@@ -24,25 +24,20 @@ def part1_solve(batteries: list[str]) -> int:
     return sum(max_volts)
 
 
-
 def part2_solve(batteries: list[str]) -> int:
     max_volts = []
     for battery in batteries:
         digits = [int(elem) for elem in list(battery)]
-
         while len(digits) > 12:
-            removed = False
             for i in range(len(digits) - 1):
                 if digits[i] < digits[i + 1]:
                     del digits[i]
-                    removed = True
                     break
-            if not removed:
+            else:
                 digits = digits[:-1]
-
         max_volts.append(int("".join(str(x) for x in digits)))
-
     return sum(max_volts)
+
 
 def main() -> None:
     puzzle = Puzzle(year=2025, day=3)
@@ -55,6 +50,7 @@ def main() -> None:
 
     ic(part2_solve(example_data))
     ic(part2_solve(puzzle.input_data.splitlines()))
+
 
 if __name__ == '__main__':
     main()
