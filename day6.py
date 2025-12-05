@@ -65,7 +65,7 @@ def part2_solve(input_ranges: list[str]) -> int:
 
 
 def main() -> None:
-    puzzle = Puzzle(year=2025, day=5)
+    puzzle = Puzzle(year=2025, day=6)
     data = puzzle.input_data
     example = puzzle.examples.pop()
     example_data = example.input_data.split("\n\n")
