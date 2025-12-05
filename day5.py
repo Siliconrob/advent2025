@@ -41,7 +41,7 @@ def part1_solve(input_ranges: list[str], input_ids: list[str]) -> int:
     for ingredient_id in ingredients:
         for available_range in available_ranges:
             start, end = available_range
-            if ingredient_id >= start and ingredient_id <= end:
+            if start <= ingredient_id <= end:
                 fresh.append(ingredient_id)
                 break
     return len(fresh)
