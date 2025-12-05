@@ -34,62 +34,66 @@ def get_neighbors(grid, i, j):
             neighbors.append(grid[ni][nj])
     return neighbors
 
-def part1_solve(input_grid: list[str]) -> int:
-    grid = []
-    for row in input_grid:
-        current_row = []
-        for col in row:
-            current_row.append(col)
-        grid.append(current_row)
-    access_points = {}
-    for row_index, row in enumerate(grid):
-        for col_index, col in enumerate(row):
-            if col == '@':
-                adjs = ic(get_neighbors(grid, row_index, col_index))
-                counts = Counter(adjs)
-                paper_counts = counts.get('@', 0)
-                if paper_counts < 4:
-                    access_points[(row_index, col_index)] = paper_counts
-    return len(access_points)
+def parse_ranges(input_ranges: list[str]) -> list[Tuple[int, int]]:
+    ranges = []
+    for range_str in input_ranges:
+        start, end = range_str.split('-')
+        ranges.append((int(start), int(end)))
+    return ranges
+
+def parse_ingredients(input_ids: list[str]) -> list[int]:
+    return [int(id) for id in input_ids]
+
+
+def part1_solve(input_ranges: list[str], input_ids: list[str]) -> int:
+    available_ranges = parse_ranges(input_ranges)
+    ingredients = parse_ingredients(input_ids)
+    fresh = []
+    for ingredient_id in ingredients:
+        for available_range in available_ranges:
+            start, end = available_range
+            if ingredient_id >= start and ingredient_id <= end:
+                fresh.append(ingredient_id)
+                break
+    return len(fresh)
+
+
+    # grid = []
+    # for row in input_grid:
+    #     current_row = []
+    #     for col in row:
+    #         current_row.append(col)
+    #     grid.append(current_row)
+    # access_points = {}
+    # for row_index, row in enumerate(grid):
+    #     for col_index, col in enumerate(row):
+    #         if col == '@':
+    #             adjs = ic(get_neighbors(grid, row_index, col_index))
+    #             counts = Counter(adjs)
+    #             paper_counts = counts.get('@', 0)
+    #             if paper_counts < 4:
+    #                 access_points[(row_index, col_index)] = paper_counts
+    # return len(access_points)
 
 
 def part2_solve(input_grid: list[str]) -> int:
-    grid = []
-    for row in input_grid:
-        current_row = []
-        for col in row:
-            current_row.append(col)
-        grid.append(current_row)
-
-    removed = {}
-    current_iteration = 0
-    while True:
-        remove_count = 0
-        for row_index, row in enumerate(grid):
-            for col_index, col in enumerate(row):
-                if col == '@':
-                    adjs = ic(get_neighbors(grid, row_index, col_index))
-                    counts = Counter(adjs)
-                    paper_counts = counts.get('@', 0)
-                    if paper_counts < 4:
-                        remove_count += 1
-                        grid[row_index][col_index] = 'x'
-        if remove_count == 0:
-            break
-        else:
-            removed[current_iteration] = remove_count
-            current_iteration += 1
-    return sum(removed.values())
+    pass
 
 
 def main() -> None:
     puzzle = Puzzle(year=2025, day=5)
     data = puzzle.input_data
     example = puzzle.examples.pop()
-    example_data = example.input_data.splitlines()
+    example_data = example.input_data.split("\n\n")
+    example_ingredient_ranges = example_data[0].splitlines()
+    example_ingredient_ids = example_data[1].splitlines()
 
-    ic(part1_solve(example_data))
-    # ic(part1_solve(puzzle.input_data.splitlines()))
+    ic(part1_solve(example_ingredient_ranges, example_ingredient_ids))
+
+    puzzle_data = puzzle.input_data.split("\n\n")
+    ingredient_ranges = puzzle_data[0].splitlines()
+    ingredient_ids = puzzle_data[1].splitlines()
+    ic(part1_solve(ingredient_ranges, ingredient_ids))
     #
     # ic(part2_solve(example_data))
     # ic(part2_solve(puzzle.input_data.splitlines()))
