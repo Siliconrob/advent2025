@@ -76,8 +76,24 @@ def part1_solve(input_ranges: list[str], input_ids: list[str]) -> int:
     # return len(access_points)
 
 
-def part2_solve(input_grid: list[str]) -> int:
-    pass
+def part2_solve(input_ranges: list[str]) -> int:
+    available_ranges = parse_ranges(input_ranges)
+    available_ranges.sort(key=lambda z: z[0])
+    merged_ranges = [available_ranges[0]]
+    for current_range in available_ranges[1:]:
+        last_range = merged_ranges[-1]
+        if current_range[0] <= last_range[1] + 1:
+            merged_ranges[-1] = (last_range[0], max(last_range[1], current_range[1]))
+        else:
+            merged_ranges.append(current_range)
+    fresh_ingredients = 0
+    for current_range in merged_ranges:
+        items = current_range[1] - current_range[0] + 1
+        fresh_ingredients += items
+    return fresh_ingredients
+
+
+
 
 
 def main() -> None:
@@ -88,15 +104,16 @@ def main() -> None:
     example_ingredient_ranges = example_data[0].splitlines()
     example_ingredient_ids = example_data[1].splitlines()
 
-    ic(part1_solve(example_ingredient_ranges, example_ingredient_ids))
 
     puzzle_data = puzzle.input_data.split("\n\n")
     ingredient_ranges = puzzle_data[0].splitlines()
     ingredient_ids = puzzle_data[1].splitlines()
+
+    ic(part1_solve(example_ingredient_ranges, example_ingredient_ids))
     ic(part1_solve(ingredient_ranges, ingredient_ids))
-    #
-    # ic(part2_solve(example_data))
-    # ic(part2_solve(puzzle.input_data.splitlines()))
+
+    ic(part2_solve(example_ingredient_ranges))
+    ic(part2_solve(ingredient_ranges))
 
 
 if __name__ == '__main__':
