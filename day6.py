@@ -30,15 +30,16 @@ class Problem:
     index: int
     numbers: list[int]
     operation: str
-    start_index: int
-    number_length: int
-    numbers_text: list[str]
+    start_index: int = 0
+    number_length: int = 0
+    numbers_text: list[str] = field(default_factory=list)
 
     def add_text(self, new_text: str) -> None:
         self.numbers_text.append(new_text)
 
     def add(self, new_number: int) -> None:
         self.numbers.append(new_number)
+
 
 def part1_solve(input_lines: list[str]) -> int:
     operations = [z.strip() for z in input_lines.pop().split()]
@@ -51,13 +52,7 @@ def part1_solve(input_lines: list[str]) -> int:
                 problems[index] = Problem(index, [number], operations[index].strip())
             else:
                 current_problem.add(number)
-    results = []
-    for key, value in problems.items():
-        if value.operation == "*":
-            results.append(reduce(mul, value.numbers))
-        else:
-            results.append(sum(value.numbers))
-    return sum(results)
+    return calculate_total(problems)
 
 
 def part2_solve(input_lines: list[str]) -> int:
@@ -70,13 +65,16 @@ def part2_solve(input_lines: list[str]) -> int:
     current_index = 1
     for char in operation_line[1:]:
         if char in ['*', '+']:
-            problems.setdefault(current_problem, Problem(current_problem, [], operations[current_problem], current_index - len(number_text), len(number_text), []))
+            problems.setdefault(current_problem, Problem(current_problem, [], operations[current_problem],
+                                                         current_index - len(number_text), len(number_text), []))
             current_problem += 1
             number_text = char
         else:
             number_text += char
         current_index += 1
-    problems.setdefault(current_problem,Problem(current_problem, [], operations[current_problem], current_index - len(number_text), len(number_text), []))
+    problems.setdefault(current_problem,
+                        Problem(current_problem, [], operations[current_problem], current_index - len(number_text),
+                                len(number_text), []))
 
     for numbers in input_lines:
         current_problem = 0
@@ -100,6 +98,10 @@ def part2_solve(input_lines: list[str]) -> int:
             if extracted_numbers != '':
                 problem.numbers.append(int(extracted_numbers))
 
+    return calculate_total(problems)
+
+
+def calculate_total(problems: dict[int, object]) -> int:
     results = []
     for key, value in problems.items():
         if value.operation == "*":
@@ -107,7 +109,6 @@ def part2_solve(input_lines: list[str]) -> int:
         else:
             results.append(sum(value.numbers))
     return sum(results)
-
 
 
 def main() -> None:
