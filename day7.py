@@ -111,16 +111,16 @@ def part2_solve(input_lines: list[str]) -> int:
 
 
 def main() -> None:
-    puzzle = Puzzle(year=2025, day=6)
+    puzzle = Puzzle(year=2025, day=7)
     data = puzzle.input_data
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
 
     ic(part1_solve(example_data))
-    ic(part1_solve(puzzle.input_data.splitlines()))
-
-    ic(part2_solve(example_data))
-    ic(part2_solve(puzzle.input_data.splitlines()))
+    # ic(part1_solve(puzzle.input_data.splitlines()))
+    #
+    # ic(part2_solve(example_data))
+    # ic(part2_solve(puzzle.input_data.splitlines()))
 
 
 if __name__ == '__main__':
