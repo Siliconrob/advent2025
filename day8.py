@@ -127,7 +127,7 @@ def part2_solve(input_lines: list[str]) -> int:
 
 
 def main() -> None:
-    puzzle = Puzzle(year=2025, day=7)
+    puzzle = Puzzle(year=2025, day=8)
     data = puzzle.input_data
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
