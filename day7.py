@@ -21,92 +21,94 @@ from shapely.geometry.polygon import Polygon, LinearRing
 from scipy import ndimage
 from heapq import heappop, heappush
 from dataclasses import dataclass, field
+from itertools import pairwise
+
+from day4 import get_neighbors
 
 load_dotenv()
 
 
-@dataclass
-class Problem:
-    index: int
-    numbers: list[int]
-    operation: str
-    start_index: int
-    number_length: int
-    numbers_text: list[str]
+def create_grid(input_data: list[str]) -> list[list[str]]:
+    grid = []
+    for row in input_data:
+        current_row = []
+        for col in row:
+            current_row.append(col)
+        grid.append(current_row)
+    return grid
 
-    def add_text(self, new_text: str) -> None:
-        self.numbers_text.append(new_text)
 
-    def add(self, new_number: int) -> None:
-        self.numbers.append(new_number)
+def next_drop(grid, i, j):
+    if not grid or not grid[0]:
+        return []
+    rows, cols = len(grid), len(grid[0])
+    directions = [(1,0)]
+    neighbors = []
+    for di, dj in directions:
+        ni, nj = i + di, j + dj
+        if 0 <= ni < rows and 0 <= nj < cols:
+            neighbors.append(grid[ni][nj])
+    return neighbors
+
+
+def set_split_positions(grid, i, j):
+    if not grid or not grid[0]:
+        return []
+    rows, cols = len(grid), len(grid[0])
+    directions = [(1,-1), (1,1)]
+    next_positions = []
+    for di, dj in directions:
+        ni, nj = i + di, j + dj
+        if 0 <= ni < rows and 0 <= nj < cols:
+            next_spot = grid[ni][nj]
+            if next_spot == '.':
+                grid[ni][nj] = '|'
+                next_positions.append((ni, nj))
+    return next_positions
+
+def get_indices(lst, targets):
+    return list(filter(lambda x: lst[x] in targets, range(len(lst))))
+
 
 def part1_solve(input_lines: list[str]) -> int:
-    operations = [z.strip() for z in input_lines.pop().split()]
-    problems = {}
-    for numbers in input_lines:
-        line_inputs = [int(z) for z in numbers.split()]
-        for index, number in enumerate(line_inputs):
-            current_problem = problems.get(index, None)
-            if current_problem is None:
-                problems[index] = Problem(index, [number], operations[index].strip())
-            else:
-                current_problem.add(number)
-    results = []
-    for key, value in problems.items():
-        if value.operation == "*":
-            results.append(reduce(mul, value.numbers))
-        else:
-            results.append(sum(value.numbers))
-    return sum(results)
+    the_grid = create_grid(input_lines)
+    for row_index, row in enumerate(the_grid):
+        current_row = the_grid[row_index]
+        the_row = "".join(current_row)
+        beam_positions = get_indices(current_row, ['S', '|'])
+        for beam_position in beam_positions:
+            direct_flow_position = next_drop(the_grid, row_index, beam_position)
+            if len(direct_flow_position) == 0:
+                #debug_grid = np.array(the_grid)
+                continue
+            if direct_flow_position[0] in ['.', '|']:
+                the_grid[row_index + 1][beam_position] = '|'
+                #debug_grid = np.array(the_grid)
+                continue
+            new_splits = set_split_positions(the_grid, row_index, beam_position)
+            #debug_grid = np.array(the_grid)
+
+
+    splits = {0: 0}
+    for line_index, line in enumerate(the_grid):
+        blocker_positions = get_indices(line, ['^'])
+        if len(blocker_positions) == 0:
+            continue
+        previous_line = the_grid[line_index - 1]
+        split_count = 0
+        for blocker_position in blocker_positions:
+            if previous_line[blocker_position] == '|':
+                split_count += 1
+        splits[line_index] = split_count
+
+    return sum(splits.values())
+
+
+
 
 
 def part2_solve(input_lines: list[str]) -> int:
-    operation_line = input_lines.pop()
-    operations = [z.strip() for z in operation_line.split()]
-    problems = {}
-
-    current_problem = 0
-    number_text = operation_line[0]
-    current_index = 1
-    for char in operation_line[1:]:
-        if char in ['*', '+']:
-            problems.setdefault(current_problem, Problem(current_problem, [], operations[current_problem], current_index - len(number_text), len(number_text), []))
-            current_problem += 1
-            number_text = char
-        else:
-            number_text += char
-        current_index += 1
-    problems.setdefault(current_problem,Problem(current_problem, [], operations[current_problem], current_index - len(number_text), len(number_text), []))
-
-    for numbers in input_lines:
-        current_problem = 0
-        while current_problem < len(problems):
-            match = problems.get(current_problem, None)
-            extract = numbers[match.start_index:match.start_index + match.number_length]
-            match.add_text(extract)
-            current_problem += 1
-
-    for key, problem in problems.items():
-        items = len(problem.numbers_text)
-        for count in range(items + 1):
-            extracted_numbers = ''
-            for problem_number_text in problem.numbers_text:
-                backwards = list(reversed(problem_number_text))
-                if count >= len(backwards):
-                    continue
-                value = backwards[count]
-                if value != ' ':
-                    extracted_numbers += value
-            if extracted_numbers != '':
-                problem.numbers.append(int(extracted_numbers))
-
-    results = []
-    for key, value in problems.items():
-        if value.operation == "*":
-            results.append(reduce(mul, value.numbers))
-        else:
-            results.append(sum(value.numbers))
-    return sum(results)
+    pass
 
 
 
@@ -117,7 +119,7 @@ def main() -> None:
     example_data = example.input_data.splitlines()
 
     ic(part1_solve(example_data))
-    # ic(part1_solve(puzzle.input_data.splitlines()))
+    ic(part1_solve(puzzle.input_data.splitlines()))
     #
     # ic(part2_solve(example_data))
     # ic(part2_solve(puzzle.input_data.splitlines()))
