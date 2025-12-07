@@ -133,10 +133,10 @@ def main() -> None:
     example_data = example.input_data.splitlines()
 
     ic(part1_solve(example_data))
-    ic(part1_solve(puzzle.input_data.splitlines()))
-
-    ic(part2_solve(example_data))
-    ic(part2_solve(puzzle.input_data.splitlines()))
+    # ic(part1_solve(puzzle.input_data.splitlines()))
+    #
+    # ic(part2_solve(example_data))
+    # ic(part2_solve(puzzle.input_data.splitlines()))
 
 
 if __name__ == '__main__':
