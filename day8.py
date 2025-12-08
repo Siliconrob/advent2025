@@ -1,3 +1,4 @@
+import math
 from collections import Counter
 from operator import mul
 from typing import Tuple
@@ -10,8 +11,8 @@ from icecream import ic
 from dotenv import load_dotenv
 import numpy as np
 from more_itertools import peekable, strip
-from more_itertools.recipes import flatten, pairwise
-from itertools import cycle
+from more_itertools.recipes import flatten, pairwise, unique
+from itertools import cycle, combinations
 import copy
 from functools import reduce, cache
 from collections import deque
@@ -26,104 +27,78 @@ from itertools import pairwise
 load_dotenv()
 
 
-def create_grid(input_data: list[str]) -> list[list[str]]:
-    grid = []
-    for row in input_data:
-        current_row = []
-        for col in row:
-            current_row.append(col)
-        grid.append(current_row)
-    return grid
+@dataclass
+class Location:
+    x: int
+    y: int
+    z: int
+
+    def key(self, other: Location) -> str:
+        return f'{self.x},{self.y},{self.z}-{other.x},{other.y},{other.z}'
+
+    def distance(self, other: Location) -> float:
+        return math.sqrt(math.pow(self.x - other.x, 2) + math.pow(self.y - other.y, 2) + math.pow(self.z - other.z, 2))
 
 
-def next_drop(grid, i, j):
-    if not grid or not grid[0]:
-        return []
-    rows, cols = len(grid), len(grid[0])
-    directions = [(1, 0)]
-    neighbors = []
-    for di, dj in directions:
-        ni, nj = i + di, j + dj
-        if 0 <= ni < rows and 0 <= nj < cols:
-            neighbors.append(grid[ni][nj])
-    return neighbors
+def parse_locations(input_lines: list[str]) -> list[Location]:
+    locations = []
+    for line in input_lines:
+        x, y, z = line.split(',')
+        locations.append(Location(int(x), int(y), int(z)))
+    return locations
 
 
-def set_split_positions(grid, i, j):
-    if not grid or not grid[0]:
-        return []
-    rows, cols = len(grid), len(grid[0])
-    directions = [(1, -1), (1, 1)]
-    next_positions = []
-    for di, dj in directions:
-        ni, nj = i + di, j + dj
-        if 0 <= ni < rows and 0 <= nj < cols:
-            next_spot = grid[ni][nj]
-            if next_spot == '.':
-                grid[ni][nj] = '|'
-                next_positions.append((ni, nj))
-    return next_positions
+def part1_solve(input_lines: list[str], connection_runs: int) -> int:
+    all_locations = parse_locations(input_lines)
 
+    distances = {}
 
-def get_indices(lst, targets):
-    return list(filter(lambda x: lst[x] in targets, range(len(lst))))
+    items = len(all_locations)
+    for i in range(items):
+        for j in range(i + 1, items):
+            distances[frozenset([i, j])] = all_locations[i].distance(all_locations[j])
 
+    sorted_by_distances = sorted(distances.items(), key=lambda x: x[1])
+    run_times = 0
+    connections = {i: {i} for i in range(len(sorted_by_distances))}
+    for id, distance in dict(sorted_by_distances).items():
+        if run_times > connection_runs:
+            break
+        run_times += 1
+        start, end = id
+        matched_connections = connections[start] | connections[end]
+        for match in matched_connections:
+            connections[match] = matched_connections
 
-def part1_solve(input_lines: list[str]) -> int:
-    the_grid = create_grid(input_lines)
-    for row_index, row in enumerate(the_grid):
-        current_row = the_grid[row_index]
-        the_row = "".join(current_row)
-        beam_positions = get_indices(current_row, ['S', '|'])
-        for beam_position in beam_positions:
-            direct_flow_position = next_drop(the_grid, row_index, beam_position)
-            if len(direct_flow_position) == 0:
-                continue
-            if direct_flow_position[0] in ['.', '|']:
-                the_grid[row_index + 1][beam_position] = '|'
-                continue
-            new_splits = set_split_positions(the_grid, row_index, beam_position)
+        # Nope doesn't work on full data set
+        # items = pair.split('-')
+        # next_connection = set([items[0], items[1]])
+        # if len(connections) == 0:
+        #     connections[0] = next_connection
+        #     continue
+        # new_circuit = 0
+        # for id, junctions in connections.items():
+        #     item1 = items[0] in junctions
+        #     item2 = items[1] in junctions
+        #     if item1 and item2:
+        #         break
+        #     if item1 == True or item2 == True:
+        #         junctions.add(items[0])
+        #         junctions.add(items[1])
+        #         break
+        #     else:
+        #         new_circuit += 1
+        # if new_circuit == len(connections):
+        #     connections[len(connections)] = next_connection
+    unique_components = {frozenset(z) for z in connections.values()}
+    conn_sets = sorted([len(z) for z in unique_components], reverse=True)
+    # conn_set_sizes = sorted([len(connection_set) for connection_set in connections.values()], reverse=True)[:3]
+    return reduce(mul, conn_sets[:3])
 
-    splits = {0: 0}
-    for line_index, line in enumerate(the_grid):
-        blocker_positions = get_indices(line, ['^'])
-        if len(blocker_positions) == 0:
-            continue
-        previous_line = the_grid[line_index - 1]
-        split_count = 0
-        for blocker_position in blocker_positions:
-            if previous_line[blocker_position] == '|':
-                split_count += 1
-        splits[line_index] = split_count
-
-    return sum(splits.values())
 
 
 def part2_solve(input_lines: list[str]) -> int:
-    # Idea from reddit users
-    # Create a split positions summation array
-    # and then every iteration sums up every possible choice left + right in the iteration beam
-    # then sum all the beam runs
-
-    current_beams = [0] * len(input_lines[0])
-    current_beams[get_indices(input_lines[0], ['S']).pop()] += 1
-    split_positions = []
-    for line_index, input_line in enumerate(input_lines):
-        split_indexes = get_indices(input_line, ['^'])
-        if len(split_indexes) > 0:
-            split_positions.append(set(split_indexes))
-
-    for current_split in split_positions:
-        new_beams = [0] * len(input_lines[0])
-        for i, count in enumerate(current_beams):
-            if count > 0:
-                if i in current_split:
-                    new_beams[i - 1] += count
-                    new_beams[i + 1] += count
-                else:
-                    new_beams[i] += count
-        current_beams = new_beams
-    return sum(current_beams)
+    pass
 
 
 def main() -> None:
@@ -132,11 +107,12 @@ def main() -> None:
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
 
-    ic(part1_solve(example_data))
-    # ic(part1_solve(puzzle.input_data.splitlines()))
+    #ic(part1_solve(example_data, 10))
+    #ic(part1_solve(puzzle.input_data.splitlines(), 1000))
     #
-    # ic(part2_solve(example_data))
+    ic(part2_solve(example_data))
     # ic(part2_solve(puzzle.input_data.splitlines()))
+
 
 
 if __name__ == '__main__':
