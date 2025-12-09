@@ -6,6 +6,7 @@ from urllib.response import addinfo
 
 import more_itertools
 import networkx
+import shapely
 from aocd.models import Puzzle
 from icecream import ic
 from dotenv import load_dotenv
@@ -16,6 +17,8 @@ from itertools import cycle, combinations
 import copy
 from functools import reduce, cache
 from collections import deque
+
+from shapely import LineString
 from sympy import symbols, Function, Eq, Piecewise
 from sympy import solve
 from shapely.geometry.polygon import Polygon, LinearRing
@@ -28,72 +31,59 @@ load_dotenv()
 
 
 @dataclass
-class Location:
+class Point:
     x: int
     y: int
-    z: int
-
-    def key(self, other: Location) -> str:
-        return f'{self.x},{self.y},{self.z}-{other.x},{other.y},{other.z}'
-
-    def distance(self, other: Location) -> float:
-        return math.sqrt(math.pow(self.x - other.x, 2) + math.pow(self.y - other.y, 2) + math.pow(self.z - other.z, 2))
 
 
-def parse_locations(input_lines: list[str]) -> list[Location]:
-    locations = []
+def parse_coords(input_lines: list[str]) -> list[Point]:
+    points = []
     for line in input_lines:
-        x, y, z = line.split(',')
-        locations.append(Location(int(x), int(y), int(z)))
-    return locations
+        x, y = line.split(',')
+        points.append(Point(int(x), int(y)))
+    return points
 
 
-def part1_solve(input_lines: list[str], connection_runs: int) -> int:
-    all_locations = parse_locations(input_lines)
+def part1_solve(input_lines: list[str]) -> int:
+    coords = parse_coords(input_lines)
+    max_size = None
+    for combo in combinations(coords, 2):
+        point1, point2 = combo
+        width = abs(point1.x - point2.x) + 1
+        height = abs(point1.y - point2.y) + 1
+        new_area = width * height
+        if max_size is None or new_area > max_size:
+            max_size = new_area
+    return max_size
 
-    distances = {}
-
-    items = len(all_locations)
-    for i in range(items):
-        for j in range(i + 1, items):
-            distances[frozenset([i, j])] = all_locations[i].distance(all_locations[j])
-
-    sorted_by_distances = sorted(distances.items(), key=lambda x: x[1])
-    run_times = 0
-    connections = {i: {i} for i in range(len(sorted_by_distances))}
-    for id, distance in dict(sorted_by_distances).items():
-        if run_times > connection_runs:
-            break
-        run_times += 1
-        start, end = id
-        matched_connections = connections[start] | connections[end]
-        for match in matched_connections:
-            connections[match] = matched_connections
-
-        # Nope doesn't work on full data set
-        # items = pair.split('-')
-        # next_connection = set([items[0], items[1]])
-        # if len(connections) == 0:
-        #     connections[0] = next_connection
-        #     continue
-        # new_circuit = 0
-        # for id, junctions in connections.items():
-        #     item1 = items[0] in junctions
-        #     item2 = items[1] in junctions
-        #     if item1 and item2:
-        #         break
-        #     if item1 == True or item2 == True:
-        #         junctions.add(items[0])
-        #         junctions.add(items[1])
-        #         break
-        #     else:
-        #         new_circuit += 1
-        # if new_circuit == len(connections):
-        #     connections[len(connections)] = next_connection
-    unique_components = {frozenset(z) for z in connections.values()}
-    conn_sets = sorted([len(z) for z in unique_components], reverse=True)
-    # conn_set_sizes = sorted([len(connection_set) for connection_set in connections.values()], reverse=True)[:3]
-    return reduce(mul, conn_sets[:3])
+    #
+    #
+    #
+    #
+    # all_locations = parse_locations(input_lines)
+    #
+    # distances = {}
+    #
+    # items = len(all_locations)
+    # for i in range(items):
+    #     for j in range(i + 1, items):
+    #         distances[frozenset([i, j])] = all_locations[i].distance(all_locations[j])
+    #
+    # sorted_by_distances = sorted(distances.items(), key=lambda x: x[1])
+    # run_times = 0
+    # connections = {i: {i} for i in range(len(sorted_by_distances))}
+    # for id, distance in dict(sorted_by_distances).items():
+    #     if run_times > connection_runs:
+    #         break
+    #     run_times += 1
+    #     start, end = id
+    #     matched_connections = connections[start] | connections[end]
+    #     for match in matched_connections:
+    #         connections[match] = matched_connections
+    # unique_components = {frozenset(z) for z in connections.values()}
+    # conn_sets = sorted([len(z) for z in unique_components], reverse=True)
+    # # conn_set_sizes = sorted([len(connection_set) for connection_set in connections.values()], reverse=True)[:3]
+    # return reduce(mul, conn_sets[:3])
 
 
 
@@ -108,8 +98,8 @@ def main() -> None:
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
 
-    ic(part1_solve(example_data, 10))
-    # ic(part1_solve(puzzle.input_data.splitlines(), 1000))
+    ic(part1_solve(example_data))
+    ic(part1_solve(puzzle.input_data.splitlines()))
     #
     # ic(part2_solve(example_data, 10))
     # ic(part2_solve(puzzle.input_data.splitlines()))
