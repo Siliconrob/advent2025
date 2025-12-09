@@ -98,65 +98,21 @@ def part1_solve(input_lines: list[str], connection_runs: int) -> int:
 
 
 def part2_solve(input_lines: list[str], connection_runs: int) -> int:
-    all_locations = parse_locations(input_lines)
-    distances = {}
-
-    items = len(all_locations)
-    for i in range(items):
-        for j in range(i + 1, items):
-            distances[frozenset([i, j])] = all_locations[i].distance(all_locations[j])
-
-    sorted_by_distances = sorted(distances.items(), key=lambda x: x[1])
-    connections = {i: {i} for i in range(len(sorted_by_distances))}
-
-    run_times = 0
-    for id, distance in dict(sorted_by_distances).items():
-        if run_times > connection_runs:
-            break
-        run_times += 1
-        start, end = id
-        matched_connections = connections[start] | connections[end]
-        for match in matched_connections:
-            connections[match] = matched_connections
-
-    sorted_by_distances = sorted(distances.items(), key=lambda x: x[1])
-    all_connected = False
-    last_merge_index_start = None
-    last_merge_index_end = None
-
-    # this is really slow (takes 20 minutes to run), brute force way to look at every single distance pair
-    # and keep merging as a unique sets until all are connected
-    # it sucks but just want to be done
-    while not all_connected:
-        connected_sets = set()
-        for component in matched_connections.values():
-            connected_sets.add(id(component))
-        circuits = len(connected_sets)
-        if circuits > 1:
-            current_pair = sorted_by_distances.pop()
-            start, end = current_pair[0]
-            component = matched_connections[start] | matched_connections[end]
-            for x in component:
-                matched_connections[x] = component
-                last_merge_index_start = start
-                last_merge_index_end = end
-        else:
-            all_connected = True
-    return all_locations[last_merge_index_start].x * all_locations[last_merge_index_end].x
+    pass
 
 
 
 def main() -> None:
-    puzzle = Puzzle(year=2025, day=8)
+    puzzle = Puzzle(year=2025, day=9)
     data = puzzle.input_data
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
 
     ic(part1_solve(example_data, 10))
-    ic(part1_solve(puzzle.input_data.splitlines(), 1000))
-
-    ic(part2_solve(example_data, 10))
-    ic(part2_solve(puzzle.input_data.splitlines()))
+    # ic(part1_solve(puzzle.input_data.splitlines(), 1000))
+    #
+    # ic(part2_solve(example_data, 10))
+    # ic(part2_solve(puzzle.input_data.splitlines()))
 
 
 if __name__ == '__main__':
