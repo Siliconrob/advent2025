@@ -60,8 +60,9 @@ def part2_solve(input_lines: list[str], begin_range: int, end_range: int) -> int
     pass
 
 
+
 def main() -> None:
-    puzzle = Puzzle(year=2025, day=10)
+    puzzle = Puzzle(year=2025, day=12)
     data = puzzle.input_data
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
