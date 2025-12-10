@@ -160,10 +160,18 @@ def part1_solve(input_lines: list[str]) -> None:
         searching = True
         commands = cycle(light_input.toggle_commands)
         while searching:
-            command = next(commands)
             current_machine = machine_paths.popleft()
-            if current_machine.last_command == command:
+
+            get_next_command = True
+            while get_next_command:
                 command = next(commands)
+                if command != current_machine.last_command:
+                # and any(x == y for x, y in zip(current_machine.current_lights.values(), target_lights))):
+                    get_next_command = False
+
+            # command = next(commands)
+            # if current_machine.last_command == command:
+            #     command = next(commands)
             current_machine.run_command(command)
             #ic(current_machine)
             if all(x == y for x, y in zip(current_machine.current_lights.values(), target_lights)):
@@ -191,7 +199,7 @@ def main() -> None:
     example_data = example.input_data.splitlines()
 
     ic(part1_solve(example_data))
-    ic(part1_solve(puzzle.input_data.splitlines()))
+    #ic(part1_solve(puzzle.input_data.splitlines()))
     #
     # ic(part2_solve(example_data, 20, 50))
     # ic(part2_solve(puzzle.input_data.splitlines(), 1_400_000_000, 1_500_000_000))
