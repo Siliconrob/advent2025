@@ -1,6 +1,5 @@
 from collections import deque
 from dataclasses import dataclass, field
-from itertools import combinations, combinations_with_replacement
 
 import numpy as np
 from aocd.models import Puzzle
@@ -84,7 +83,7 @@ def part1_solve(input_lines: list[str]) -> None:
 
 
 
-def part2_solve(input_lines: list[str]) -> None:
+def part2_solve(input_lines: list[str]) -> tuple[int, int]:
     light_inputs = [parse_line_input(line) for line in input_lines]
     completed_lights = {}
     for light_index, light_input in enumerate(light_inputs):
@@ -95,23 +94,37 @@ def part2_solve(input_lines: list[str]) -> None:
             for index in command:
                 row[index] = 1
             grid.append(row)
-        searching = True
-        current_presses = max(light_input.jolts)
         jolt_target = np.array(light_input.jolts)
-        while searching:
-            for combo in combinations_with_replacement(grid, current_presses):
-                matrix = np.array(combo)
-                flipped = np.sum(np.transpose(matrix), axis=1)
-                if (flipped == jolt_target).all():
-                    searching = False
-                    completed_lights[light_index] = current_presses
-                    break
-            current_presses += 1
-    totals = 0
+        matrix = np.array(grid)
+        start = np.transpose(matrix)
+        x = np.linalg.lstsq(start, jolt_target)
+        completed_lights[light_index] = x[0]
+        # This is better up is too slow
+        # searching = True
+        # current_presses = max(light_input.jolts)
+        # while searching:
+        #     for combo in combinations_with_replacement(grid, current_presses):
+        #         matrix = np.array(combo)
+        #         flipped = np.sum(np.transpose(matrix), axis=1)
+        #         if (flipped == jolt_target).all():
+        #             searching = False
+        #             completed_lights[light_index] = current_presses
+        #             break
+        #     current_presses += 1
+    totals = []
     for light_index, steps in completed_lights.items():
-        totals += steps
-
-    return totals
+        mins = []
+        maxes = []
+        for step in steps:
+            mins.append(np.floor(step))
+            maxes.append(np.ceil(step))
+        totals.append((sum(mins), sum(maxes)))
+    total_min = 0
+    total_max = 0
+    for mins, maxs in totals:
+        total_min += mins
+        total_max += maxs
+    return (total_min, total_max)
 
 
 def main() -> None:
@@ -120,13 +133,14 @@ def main() -> None:
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
 
-    # ic(part1_solve(example_data))
-    # ic(part1_solve(puzzle.input_data.splitlines()))
+    ic(part1_solve(example_data))
+    ic(part1_solve(puzzle.input_data.splitlines()))
     #
     ic(part2_solve(example_data))
+    # this only gives you a range because of the least squares method
+    # kept guessing inputs into AoC from the range till accepted
+    # my range is (np.float64(17394.0), np.float64(18679.0))
     ic(part2_solve(puzzle.input_data.splitlines()))
-
-
 
 
 if __name__ == '__main__':
