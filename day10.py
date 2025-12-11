@@ -1,6 +1,8 @@
 from collections import deque
 from dataclasses import dataclass, field
+from itertools import combinations, combinations_with_replacement
 
+import numpy as np
 from aocd.models import Puzzle
 from dotenv import load_dotenv
 from icecream import ic
@@ -82,8 +84,34 @@ def part1_solve(input_lines: list[str]) -> None:
 
 
 
-def part2_solve(input_lines: list[str], begin_range: int, end_range: int) -> int:
-    pass
+def part2_solve(input_lines: list[str]) -> None:
+    light_inputs = [parse_line_input(line) for line in input_lines]
+    completed_lights = {}
+    for light_index, light_input in enumerate(light_inputs):
+
+        grid = []
+        for command in light_input.toggle_commands:
+            row = [0] * light_input.dest_length
+            for index in command:
+                row[index] = 1
+            grid.append(row)
+        searching = True
+        current_presses = max(light_input.jolts)
+        jolt_target = np.array(light_input.jolts)
+        while searching:
+            for combo in combinations_with_replacement(grid, current_presses):
+                matrix = np.array(combo)
+                flipped = np.sum(np.transpose(matrix), axis=1)
+                if (flipped == jolt_target).all():
+                    searching = False
+                    completed_lights[light_index] = current_presses
+                    break
+            current_presses += 1
+    totals = 0
+    for light_index, steps in completed_lights.items():
+        totals += steps
+
+    return totals
 
 
 def main() -> None:
@@ -92,11 +120,11 @@ def main() -> None:
     example = puzzle.examples.pop()
     example_data = example.input_data.splitlines()
 
-    ic(part1_solve(example_data))
-    ic(part1_solve(puzzle.input_data.splitlines()))
+    # ic(part1_solve(example_data))
+    # ic(part1_solve(puzzle.input_data.splitlines()))
     #
-    # ic(part2_solve(example_data, 20, 50))
-    # ic(part2_solve(puzzle.input_data.splitlines(), 1_400_000_000, 1_500_000_000))
+    ic(part2_solve(example_data))
+    ic(part2_solve(puzzle.input_data.splitlines()))
 
 
 
