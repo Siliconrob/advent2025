@@ -97,9 +97,10 @@ def part2_solve(input_lines: list[str]) -> tuple[int, int]:
         jolt_target = np.array(light_input.jolts)
         matrix = np.array(grid)
         start = np.transpose(matrix)
+        # https://numpy.org/doc/2.3/reference/generated/numpy.linalg.lstsq.html
         x = np.linalg.lstsq(start, jolt_target)
         completed_lights[light_index] = x[0]
-        # This is better up is too slow
+        # This is better but is too slow
         # searching = True
         # current_presses = max(light_input.jolts)
         # while searching:
