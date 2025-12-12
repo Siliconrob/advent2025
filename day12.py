@@ -1,3 +1,4 @@
+import functools
 import math
 from collections import Counter
 from operator import mul
@@ -6,6 +7,8 @@ from urllib.response import addinfo
 
 import more_itertools
 import networkx
+import networkx as nx
+import pydapper
 import shapely
 from aocd.models import Puzzle
 from icecream import ic
@@ -18,6 +21,9 @@ import copy
 from functools import reduce, cache
 from collections import deque
 
+from networkx.algorithms.simple_paths import all_simple_paths
+from networkx.readwrite import adjlist
+from networkx.readwrite.json_graph.adjacency import adjacency_data
 from shapely import LineString
 from sympy import symbols, Function, Eq, Piecewise
 from sympy import solve
@@ -26,6 +32,7 @@ from scipy import ndimage
 from heapq import heappop, heappush
 from dataclasses import dataclass, field
 from itertools import pairwise
+from frozendict import frozendict
 
 load_dotenv()
 
