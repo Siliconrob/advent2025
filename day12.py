@@ -38,30 +38,53 @@ load_dotenv()
 
 
 @dataclass
-class Point:
-    x: int
-    y: int
+class Shape:
+    index: int = 0
+    points: list[str] = field(default_factory=list)
 
 
-def parse_coords(input_lines: list[str]) -> list[Point]:
-    points = []
-    for line in input_lines:
-        x, y = line.split(',')
-        points.append(Point(int(x), int(y)))
-    return points
+@dataclass
+class Region:
+    size: tuple[int, int] = (0, 0)
+    shapes_index: list[int] = field(default_factory=list)
 
 
-def part1_solve(input_lines: list[str]) -> int:
-    coords = parse_coords(input_lines)
-    max_size = None
-    for combo in combinations(coords, 2):
-        point1, point2 = combo
-        width = abs(point1.x - point2.x) + 1
-        height = abs(point1.y - point2.y) + 1
-        new_area = width * height
-        if max_size is None or new_area > max_size:
-            max_size = new_area
-    return max_size
+def part1_solve(input_data: str) -> int:
+    all_shapes = []
+    all_regions = []
+
+    data_inputs = deque(input_data.splitlines())
+    shape_index = 0
+    current_shape = Shape()
+
+    while data_inputs:
+        line = data_inputs.popleft()
+        if line == "":
+            all_shapes.append(current_shape)
+            shape_index += 1
+            current_shape = Shape(index=shape_index)
+        if "#" in line:
+            current_shape.points.append(line)
+            continue
+        if "x" in line:
+            size, presents = line.split(":")
+            width, height = size.split("x")
+            shape_index = [int(present) for present in presents.split()]
+            all_regions.append(Region(size=(int(width), int(height)), shapes_index=shape_index))
+
+    for region in all_regions:
+        ic(region)
+        grid = np.zeros(region.size)
+        shapes_to_fit = []
+        for index, count in enumerate(region.shapes_index):
+            while count > 0:
+                shapes_to_fit.append(all_shapes[index])
+                count -= 1
+        ic(shapes_to_fit)
+
+
+
+
 
 def part2_solve(input_lines: list[str], begin_range: int, end_range: int) -> int:
     pass
@@ -72,7 +95,7 @@ def main() -> None:
     puzzle = Puzzle(year=2025, day=12)
     data = puzzle.input_data
     example = puzzle.examples.pop()
-    example_data = example.input_data.splitlines()
+    example_data = example.input_data
 
     ic(part1_solve(example_data))
     # ic(part1_solve(puzzle.input_data.splitlines()))
