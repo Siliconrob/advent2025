@@ -5,11 +5,13 @@ description = "Add your description here"
 requires-python = ">=3.14"
 dependencies = [
     "advent-of-code-data>=2.1.0",
+    "frozendict>=2.4.7",
     "icecream>=2.1.8",
     "meteo-downloader>=1.0",
     "more-itertools>=10.8.0",
     "networkx>=3.5",
     "numpy>=2.3.5",
+    "pydapper==0.12.0",
     "python-dotenv==1.2.1",
     "scipy>=1.16.3",
     "shapely>=2.1.2",
