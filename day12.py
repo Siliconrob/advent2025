@@ -40,7 +40,15 @@ load_dotenv()
 @dataclass
 class Shape:
     index: int = 0
-    points: list[str] = field(default_factory=list)
+    points: list[list[str]] = field(default_factory=list)
+
+    def empty_points(self) -> list[tuple[int, int]]:
+        empty_locations = []
+        for row_index, row in enumerate(self.points):
+            for column_index, column in enumerate(row):
+                if column == ".":
+                    empty_locations.append((row_index, column_index))
+        return empty_locations
 
 
 @dataclass
@@ -72,6 +80,7 @@ def part1_solve(input_data: str) -> int:
             shape_index = [int(present) for present in presents.split()]
             all_regions.append(Region(size=(int(width), int(height)), shapes_index=shape_index))
 
+    valid = 0
     for region in all_regions:
         ic(region)
         grid = np.zeros(region.size)
@@ -80,8 +89,13 @@ def part1_solve(input_data: str) -> int:
             while count > 0:
                 shapes_to_fit.append(all_shapes[index])
                 count -= 1
-        ic(shapes_to_fit)
+        total_points = sum(9 - len(shape.empty_points()) for shape in shapes_to_fit)
+        if total_points > region.size[0] * region.size[1]:
+            # too small an area
+            continue
 
+
+    ic(valid)
 
 
 
