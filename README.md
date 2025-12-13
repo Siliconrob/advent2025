@@ -8,6 +8,8 @@
 
 I am doing things the weird way so go ahead and criticize
 
+![advent2025](https://github.com/user-attachments/assets/ea9d590c-4abf-4c1c-b0c9-2038d19f471b)
+
 ### Create an environment variable called
 `AOC_SESSION` = `<stick ID in here>`
 
