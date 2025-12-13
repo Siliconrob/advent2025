@@ -113,7 +113,9 @@ def main() -> None:
     example = puzzle.examples.pop()
     example_data = example.input_data
 
+    # The example input is the general case, extremely difficult to solve at scale
     ic(part1_solve(example_data))
+    # The actual input is all the blocks either fit loosely or don't
     ic(part1_solve(puzzle.input_data))
 
 
