@@ -1,5 +1,6 @@
 import functools
 import math
+import re
 from collections import Counter
 from operator import mul
 from typing import Tuple
@@ -21,6 +22,7 @@ import copy
 from functools import reduce, cache
 from collections import deque
 
+from networkx.algorithms.operators.binary import difference
 from networkx.algorithms.simple_paths import all_simple_paths
 from networkx.readwrite import adjlist
 from networkx.readwrite.json_graph.adjacency import adjacency_data
@@ -80,29 +82,29 @@ def part1_solve(input_data: str) -> int:
             shape_index = [int(present) for present in presents.split()]
             all_regions.append(Region(size=(int(width), int(height)), shapes_index=shape_index))
 
-    valid = 0
-    for region in all_regions:
+    valid_regions = {}
+    for region_index, region in enumerate(all_regions):
         ic(region)
-        grid = np.zeros(region.size)
         shapes_to_fit = []
         for index, count in enumerate(region.shapes_index):
             while count > 0:
                 shapes_to_fit.append(all_shapes[index])
                 count -= 1
         total_points = sum(9 - len(shape.empty_points()) for shape in shapes_to_fit)
-        if total_points > region.size[0] * region.size[1]:
+        area_to_fit = region.size[0] * region.size[1]
+        if total_points > area_to_fit:
             # too small an area
             continue
-
-
-    ic(valid)
-
-
-
-
-def part2_solve(input_lines: list[str], begin_range: int, end_range: int) -> int:
-    pass
-
+        # I don't know exactly why this works, but reddit tips was count the shapes
+        # they are always the same bounding box of 9
+        # and then Total Area - Bounding Box area if it's less than 0 invalid
+        # I guess it makes sense if you think of it as a puzzle and each piece is a square ?!
+        spaces = area_to_fit - total_points
+        if spaces < 0:
+            continue
+        if spaces > 0:
+            valid_regions[region_index] = 1
+    return len(valid_regions.items())
 
 
 def main() -> None:
@@ -112,11 +114,7 @@ def main() -> None:
     example_data = example.input_data
 
     ic(part1_solve(example_data))
-    # ic(part1_solve(puzzle.input_data.splitlines()))
-    #
-    # ic(part2_solve(example_data, 20, 50))
-    # ic(part2_solve(puzzle.input_data.splitlines(), 1_400_000_000, 1_500_000_000))
-
+    ic(part1_solve(puzzle.input_data))
 
 
 if __name__ == '__main__':
